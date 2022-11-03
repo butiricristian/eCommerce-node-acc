@@ -5,11 +5,16 @@ import * as express from 'express';
 import { auth } from 'express-openid-connect';
 import { authConfig } from './auth/auth.config';
 import authRouter from './auth/auth.routes';
+import * as debug from 'debug'
+import { connectDatabase } from './common/mongoose.service';
 const PORT = 3001;
 
 // Initialize express app
 const app: express.Application = express();
+const log = debug('app:main')
 
+// Initialize db connection
+connectDatabase()
 // JSON parsing
 app.use(express.json());
 // Auth0 Config
@@ -24,5 +29,5 @@ app.get('/', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  return console.log(`Express is listening at http://localhost:${PORT}`);
+  return log(`Express is listening at http://localhost:${PORT}`);
 });
