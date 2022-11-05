@@ -7,6 +7,7 @@ import { authConfig } from './auth/auth.config';
 import authRouter from './auth/auth.routes';
 import * as debug from 'debug'
 import { connectDatabase } from './common/mongoose.service';
+import usersRouter from './users/users.routes';
 const PORT = 3001;
 
 // Initialize express app
@@ -19,8 +20,11 @@ connectDatabase()
 app.use(express.json());
 // Auth0 Config
 app.use(auth(authConfig));
+
 // Auth routes (will be redirected to auth0 routes)
 app.use('/api/v1', authRouter);
+// User routes (CRUD)
+app.use('/api/v1', usersRouter);
 
 // Root url
 app.get('/', (req, res) => {
