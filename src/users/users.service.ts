@@ -2,6 +2,7 @@ import CreateUserDTO from './dto/create_user.dto';
 import UserModel from './models/user.model';
 import * as bcrypt from 'bcrypt';
 import authService from '../auth/auth.service';
+import UpdateUserDTO from './dto/update_user.dto';
 
 const SALT_OR_ROUNDS = 10000
 
@@ -22,19 +23,31 @@ class UsersService {
     return user
   }
 
+  async updateUser(userId: string, userData: UpdateUserDTO) {
+    const user = await this._updateMongoUser(userId, userData)
+    return user
+  }
+
+  async deleteUser(userId: string) {
+    return UserModel.findByIdAndDelete(userId)
+  }
+
   private async _createAuthUser(userData: CreateUserDTO) {
     return authService.createUser(userData)
   }
 
   private async _createMongoUser(userData: CreateUserDTO) {
     const passwordHash = await bcrypt.hash(userData.password, SALT_OR_ROUNDS);
-    const user = new UserModel({
-      username: userData.username,
-      auth0Id: userData.auth0Id,
-      email: userData.email,
-      password: passwordHash
-    })
-    return user.save()
+    userData.password = passwordHash
+    return UserModel.create(userData)
+  }
+
+  private async _updateMongoUser(userId: string, userData: UpdateUserDTO) {
+    if(userData.password) {
+      const passwordHash = await bcrypt.hash(userData.password, SALT_OR_ROUNDS)
+      userData.password = passwordHash
+    }
+    return UserModel.findByIdAndUpdate(userId, userData)
   }
 }
 
