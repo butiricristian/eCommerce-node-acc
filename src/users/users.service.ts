@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import authService from '../auth/auth.service';
 import UpdateUserDTO from './dto/update_user.dto';
 
-const SALT_OR_ROUNDS = 10000
+const SALT_OR_ROUNDS = 10000;
 
 class UsersService {
   async getAllUsers({ limit, offset }: { limit: number; offset: number }) {
@@ -16,39 +16,64 @@ class UsersService {
   }
 
   async createUser(userData: CreateUserDTO) {
-    const auth0Id = await this._createAuthUser(userData)
-    userData.auth0Id = auth0Id
+    const auth0Id = await this._createAuthUser(userData);
+    userData.auth0Id = auth0Id;
 
-    const user = await this._createMongoUser(userData)
-    return user
+    const user = await this._createMongoUser(userData);
+    return user;
   }
 
   async updateUser(userId: string, userData: UpdateUserDTO) {
-    const user = await this._updateMongoUser(userId, userData)
-    return user
+    const user = await this._updateMongoUser(userId, userData);
+    return user;
   }
 
   async deleteUser(userId: string) {
-    return UserModel.findByIdAndDelete(userId)
+    const user = await UserModel.findById(userId);
+    authService.deleteUser(user.auth0Id);
+    return UserModel.findByIdAndDelete(userId);
+  }
+
+  async closeAccount(userId: string) {
+    const user = await UserModel.findById(userId);
+    authService.deleteUser(user.auth0Id);
+  }
+
+  async changePassword(userId: string, password: string) {
+    const user = await UserModel.findById(userId);
+    const passwordHash = await bcrypt.hash(password, SALT_OR_ROUNDS);
+    await UserModel.findByIdAndUpdate(userId, { password: passwordHash }, { new: true });
+    authService.changePassword(user.auth0Id, passwordHash);
+  }
+
+  async changeEmail(userId: string, email: string) {
+    const user = await UserModel.findById(userId);
+    await UserModel.findByIdAndUpdate(userId, { email }, { new: true });
+    authService.changeEmail(user.auth0Id, email);
+  }
+
+  async resetPassword(email: string) {
+    const user = await UserModel.findOne({ email });
+    authService.resetPassword(user);
   }
 
   private async _createAuthUser(userData: CreateUserDTO) {
-    return authService.createUser(userData)
+    return authService.createUser(userData);
   }
 
   private async _createMongoUser(userData: CreateUserDTO) {
     const passwordHash = await bcrypt.hash(userData.password, SALT_OR_ROUNDS);
-    userData.password = passwordHash
-    return UserModel.create(userData)
+    userData.password = passwordHash;
+    return UserModel.create(userData);
   }
 
   private async _updateMongoUser(userId: string, userData: UpdateUserDTO) {
-    if(userData.password) {
-      const passwordHash = await bcrypt.hash(userData.password, SALT_OR_ROUNDS)
-      userData.password = passwordHash
+    if (userData.password) {
+      const passwordHash = await bcrypt.hash(userData.password, SALT_OR_ROUNDS);
+      userData.password = passwordHash;
     }
-    return UserModel.findByIdAndUpdate(userId, userData)
+    return UserModel.findByIdAndUpdate(userId, userData);
   }
 }
 
-export default new UsersService()
+export default new UsersService();

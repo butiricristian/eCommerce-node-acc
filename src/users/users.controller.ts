@@ -28,6 +28,28 @@ class UsersController {
     const user = await usersService.deleteUser(req.params.userId);
     res.status(200).send(user);
   }
+
+  async changePassword(req: Request, res: Response) {
+    const { password } = req.body
+    await usersService.changePassword(req.params.userId, password);
+    res.sendStatus(204)
+  }
+
+  async changeEmail(req: Request, res: Response) {
+    const { email } = req.body
+    await usersService.changeEmail(req.params.userId, email);
+    res.sendStatus(204)
+  }
+
+  async closeAccount(req: Request, res: Response) {
+    await usersService.closeAccount(req.params.userId);
+    res.sendStatus(204)
+  }
+
+  async resetPassword(req: Request<unknown, unknown, unknown, {email: string}>, res: Response) {
+    const user = await usersService.resetPassword(req.query.email);
+    res.status(200).send(user);
+  }
 }
 
 export default new UsersController()
