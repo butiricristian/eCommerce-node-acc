@@ -1,7 +1,9 @@
 export default interface CreateUserDTO {
   email: string;
-  password: string;
   username: string;
+  firstName: string;
+  lastName: string;
   auth0Id?: string;
   role?: string;
+  password?: string;
 }

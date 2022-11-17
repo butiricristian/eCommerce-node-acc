@@ -29,6 +29,11 @@ class UsersController {
     res.status(200).send(user);
   }
 
+  async register(req: Request, res: Response) {
+    const user = await usersService.register(req.body);
+    res.status(201).send(user);
+  }
+
   async changePassword(req: Request, res: Response) {
     const { password } = req.body
     await usersService.changePassword(req.params.userId, password);

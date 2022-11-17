@@ -1,8 +1,9 @@
-import { ManagementClient } from 'auth0';
+import { ManagementClient, ObjectWithId, Role } from 'auth0';
 import debug from 'debug';
 import CreateUserDTO from 'src/users/dto/create_user.dto';
-import { IUser } from 'src/users/models/user.model';
+import { IUser, ROLES } from '../users/models/user.model';
 import axios from 'axios';
+import UpdateUserDTO from 'src/users/dto/update_user.dto';
 
 const log = debug('app:auth:service');
 
@@ -16,6 +17,7 @@ class AuthService {
       clientSecret: process.env.AUTH_CLIENT_SECRET,
       scope:
         'create:users read:users update:users delete:users ' +
+        'read:roles ' +
         'create:users_app_metadata update:users_app_metadata delete:users_app_metadata read:users_app_metadata',
     });
   }
@@ -31,13 +33,37 @@ class AuthService {
     });
     log('Auth0 User created successfuly');
 
+    const idObject = { id: authUser.user_id };
+    this._updateRole(idObject, user.role || ROLES.CUSTOMER);
+
     return authUser.user_id;
   }
 
+  async updateUser(auth0Id: string, user: UpdateUserDTO) {
+    log('Updating Auth0 User...');
+    const idObject = { id: auth0Id };
+    const data = {
+      connection: 'Username-Password-Authentication',
+      email_verified: false,
+      verify_email: false,
+    };
+    if (user.email) {
+      data['email'] = user.email;
+    }
+    if (user.password) {
+      data['password'] = user.password;
+    }
+    await this._managementClient.updateUser(idObject, data);
+    log('Auth0 User updated successfuly');
+    this._updateRole(idObject, user.role);
+  }
+
   async deleteUser(auth0Id: string) {
+    log('Deleting Auth0 User...');
     this._managementClient.deleteUser({
       id: auth0Id,
     });
+    log('Auth0 User deleted successfuly');
   }
 
   async changePassword(auth0Id: string, password: string) {
@@ -65,6 +91,17 @@ class AuthService {
       console.error(e.response.data);
       throw e.stack;
     }
+  }
+
+  private async _updateRole(idObject: ObjectWithId, role: string) {
+    if (!role) return;
+
+    log('Updating Auth0 User Roles...');
+    const authRoles = (await this._managementClient.getRoles())
+      .filter((r: Role) => r.name.toLowerCase === role.toLowerCase)
+      .map((r: Role) => r.id);
+    await this._managementClient.assignRolestoUser(idObject, { roles: authRoles });
+    log('Auth0 User Roles updated successfuly');
   }
 }
 

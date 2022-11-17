@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import userModel, { IUser, ROLES } from '../../users/models/user.model';
-import { Token } from 'auth0';
 import debug from 'debug';
-import { NextFunction, Request, Response } from 'express';
+import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { auth as authJwt } from 'express-oauth2-jwt-bearer';
-import jwt_decode from 'jwt-decode';
 
 declare global {
   namespace Express {
     interface Request {
       currentUser: IUser;
-      token: Token;
     }
 
     interface Response {
       currentUser: IUser;
-      token: Token;
     }
   }
 }
+
+export const ROLES_KEY = `${process.env.AUTH_AUDIENCE}claims/roles`;
+export const ID_KEY = 'sub';
+const log = debug('app:auth:middleware');
 
 /**
  * This middleware checks and validate the access token
@@ -28,41 +28,44 @@ export const checkJwt = authJwt({
   issuerBaseURL: process.env.AUTH_ISSUER_BASE_URL,
 });
 
-const log = debug('app:auth:middleware');
+export const handleUnauthorizedError: ErrorRequestHandler = (
+  err,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (err && err.status === 401) {
+    res.status(401).send({ err: 'JWT token is invalid' });
+    return;
+  }
+  next();
+};
 
-const AUTHORIZATION_HEADER = 'authorization';
-const BEARER = 'Bearer';
-export const ROLES_KEY = `${process.env.AUTH_AUDIENCE}claims/roles`;
-export const ID_KEY = 'sub';
-
-export function requireMinimumPermission(PERMISSION: string) {
-  log('Minimum permission required: ', PERMISSION);
+export function requireOneOfRoles(requiredRoles: Array<string>) {
+  log('Roles required: ', requiredRoles);
 
   return (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.token)
-    console.log(ROLES_KEY)
-    if (!req.token) {
+    if (!req.auth.payload) {
       log('User cannot perform action because token is missing');
       res.status(403).send({ err: 'User does not have permissions to access this resource' });
-      return
+      return;
     }
-    if (!req.token[ROLES_KEY]) {
+    if (!req.auth.payload[ROLES_KEY]) {
       log('User cannot perform action because token is missing ROLES_KEY');
       res.status(403).send({ err: 'User does not have permissions to access this resource' });
-      return
+      return;
     }
 
-    const roles = req.token[ROLES_KEY]
-    if (!hasRole(roles, PERMISSION)) {
-      log('User cannot perform action because it doesn\'t have the right Role');
+    const roles = req.auth.payload[ROLES_KEY] as string[];
+    if (!hasRole(roles, requiredRoles)) {
+      log("User cannot perform action because it doesn't have the right Role");
       res.status(403).send({ err: 'User does not have permissions to access this resource' });
-      return
+      return;
     }
-
-    if (req.params.user_id !== req.currentUser.id && !hasRole(roles, ROLES.ADMIN)) {
+    if (!hasRole(roles, [ROLES.ADMIN]) && req.params.userId !== req.currentUser.id) {
       log('User cannot perform action');
       res.status(403).send({ err: 'User does not have permissions to access this resource' });
-      return
+      return;
     }
 
     log('User can perform action to', req.originalUrl);
@@ -71,7 +74,7 @@ export function requireMinimumPermission(PERMISSION: string) {
 }
 
 export async function extractCurrentUser(req: Request, res: Response, next: NextFunction) {
-  const auth0Id = req.token[ID_KEY];
+  const auth0Id = req.auth.payload[ID_KEY];
   if (!auth0Id) {
     res.status(400).send({ err: 'Token does not contain auth0 ID' });
   }
@@ -82,22 +85,6 @@ export async function extractCurrentUser(req: Request, res: Response, next: Next
   next();
 }
 
-export function extractUserMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (!req.headers[AUTHORIZATION_HEADER] || req.headers[AUTHORIZATION_HEADER].indexOf(BEARER) < 0) {
-    res.status(400).send({ err: 'Authorization Header missing with Bearer + JWT' });
-  }
-
-  try {
-    log('Decoding token');
-    req.token = jwt_decode(req.headers[AUTHORIZATION_HEADER].split(BEARER)[1]);
-    log('Token decoded');
-
-    next();
-  } catch (err) {
-    res.status(500).send(err);
-  }
-}
-
-function hasRole(roles: Array<string>, role: string) {
-  return roles.find((value: string) => value.toLowerCase() === role)
+function hasRole(roles: Array<string>, requiredRoles: Array<string>) {
+  return roles.find((value: string) => requiredRoles.indexOf(value.toLowerCase()) > -1);
 }
