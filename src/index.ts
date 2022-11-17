@@ -8,6 +8,7 @@ import authRouter from './auth/auth.routes';
 import * as debug from 'debug'
 import { connectDatabase } from './common/mongoose.service';
 import usersRouter from './users/users.routes';
+import { SwaggerConfig } from './swagger.config';
 const PORT = 3001;
 
 // Initialize express app
@@ -30,6 +31,8 @@ app.use('/api/v1', usersRouter);
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+new SwaggerConfig(app, 'localhost', PORT);
 
 // Start server
 app.listen(PORT, () => {
