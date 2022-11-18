@@ -32,19 +32,19 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
   {
-    username: { type: String, required: true, unique: true },
-    auth0Id: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    username: { type: String, required: [true, 'Username is required'], unique: true },
+    auth0Id: { type: String, required: [true, 'Auth0Id is required'], unique: true },
+    email: { type: String, required: [true, 'Email is required'], unique: true },
     password: { type: String, select: false },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    role: { type: String, required: true, enum: ROLES, default: 'customer' },
+    firstName: { type: String, required: [true, 'First Name is required'] },
+    lastName: { type: String, required: [true, 'Last Name is required'] },
+    role: { type: String, required: [true, 'Role is required'], enum: ROLES, default: 'customer' },
     gender: { type: String, enum: ['MALE', 'FEMALE'], default: 'MALE' },
     phone: { type: String },
     dateOfBirth: { type: Date },
     avatar: { type: String },
     addresses: { type: [] },
-    status: { type: String, required: true, enum: ['active', 'closed'], default: 'active' },
+    status: { type: String, required: [true, 'Status is required'], enum: ['active', 'closed'], default: 'active' },
   },
   {
     timestamps: true,

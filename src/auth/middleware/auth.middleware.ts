@@ -28,19 +28,6 @@ export const checkJwt = authJwt({
   issuerBaseURL: process.env.AUTH_ISSUER_BASE_URL,
 });
 
-export const handleUnauthorizedError: ErrorRequestHandler = (
-  err,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  if (err && err.status === 401) {
-    res.status(401).send({ err: 'JWT token is invalid' });
-    return;
-  }
-  next();
-};
-
 export function requireOneOfRoles(requiredRoles: Array<string>) {
   log('Roles required: ', requiredRoles);
 

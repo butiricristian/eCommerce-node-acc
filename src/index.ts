@@ -9,6 +9,8 @@ import * as debug from 'debug'
 import { connectDatabase } from './common/mongoose.service';
 import usersRouter from './users/users.routes';
 import { SwaggerConfig } from './swagger.config';
+import { handleAuth0Error, handleUnauthorizedError } from './auth/middleware/auth.errors.middleware';
+import { handleValidationError } from './users/middleware/users.middleware';
 const PORT = 3001;
 
 // Initialize express app
@@ -32,6 +34,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+app.use(handleUnauthorizedError, handleAuth0Error, handleValidationError)
 new SwaggerConfig(app, 'localhost', PORT);
 
 // Start server

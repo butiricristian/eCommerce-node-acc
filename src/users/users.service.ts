@@ -81,7 +81,7 @@ class UsersService {
       const passwordHash = await bcrypt.hash(userData.password, SALT_OR_ROUNDS);
       userData.password = passwordHash;
     }
-    return UserModel.findByIdAndUpdate(userId, userData, { new: true });
+    return UserModel.findByIdAndUpdate(userId, userData, { new: true, runValidators: true });
   }
 }
 
