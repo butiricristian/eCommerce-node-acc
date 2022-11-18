@@ -11,6 +11,7 @@ import usersRouter from './users/users.routes';
 import { SwaggerConfig } from './swagger.config';
 import { handleAuth0Error, handleUnauthorizedError } from './auth/middleware/auth.errors.middleware';
 import { handleValidationError } from './users/middleware/users.middleware';
+import analyticsRouter from './analytics/analytics.routes';
 const PORT = 3001;
 
 // Initialize express app
@@ -28,6 +29,8 @@ app.use(auth(authConfig));
 app.use('/api/v1', authRouter);
 // User routes (CRUD)
 app.use('/api/v1', usersRouter);
+// Analytics routes
+app.use('/api/v1', analyticsRouter);
 
 // Root url
 app.get('/', (req, res) => {
@@ -35,6 +38,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(handleUnauthorizedError, handleAuth0Error, handleValidationError)
+
 new SwaggerConfig(app, 'localhost', PORT);
 
 // Start server

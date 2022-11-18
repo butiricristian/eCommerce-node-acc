@@ -8,11 +8,11 @@ const SALT_OR_ROUNDS = 10000;
 
 class UsersService {
   async getAllUsers({ limit, offset }: { limit: number; offset: number }) {
-    return UserModel.find().skip(offset).limit(limit);
+    return await UserModel.find().skip(offset).limit(limit);
   }
 
   async getUserById(userId: string) {
-    return UserModel.findById(userId);
+    return await UserModel.findById(userId);
   }
 
   async createUser(userData: CreateUserDTO) {

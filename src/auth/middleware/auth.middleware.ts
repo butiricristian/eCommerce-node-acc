@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import userModel, { IUser, ROLES } from '../../users/models/user.model';
 import debug from 'debug';
-import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { auth as authJwt } from 'express-oauth2-jwt-bearer';
 
 declare global {
