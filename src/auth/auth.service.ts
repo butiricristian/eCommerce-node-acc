@@ -98,8 +98,13 @@ class AuthService {
 
     log('Updating Auth0 User Roles...');
     const authRoles = (await this._managementClient.getRoles())
-      .filter((r: Role) => r.name.toLowerCase === role.toLowerCase)
+      .filter((r: Role) => {
+        console.log(r)
+        return r.name.toLowerCase() === role.toLowerCase()
+      })
       .map((r: Role) => r.id);
+    console.log(role)
+    console.log(authRoles)
     await this._managementClient.assignRolestoUser(idObject, { roles: authRoles });
     log('Auth0 User Roles updated successfuly');
   }

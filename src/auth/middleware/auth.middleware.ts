@@ -75,3 +75,13 @@ export async function extractCurrentUser(req: Request, res: Response, next: Next
 function hasRole(roles: Array<string>, requiredRoles: Array<string>) {
   return roles.find((value: string) => requiredRoles.indexOf(value.toLowerCase()) > -1);
 }
+
+export async function forbidCustomerRoleChange(req: Request, res: Response, next: NextFunction) {
+  const roles = req.auth.payload[ROLES_KEY] as string[];
+  if (!hasRole(roles, [ROLES.ADMIN]) && req.body.role) {
+    log('User cannot change their role');
+    res.status(403).send({ err: 'User does not have permissions to access this resource' });
+    return;
+  }
+  next();
+}

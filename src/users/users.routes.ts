@@ -3,6 +3,7 @@ import * as express from 'express';
 import {
   checkJwt,
   extractCurrentUser,
+  forbidCustomerRoleChange,
   requireOneOfRoles,
 } from '../auth/middleware/auth.middleware';
 import usersController from './users.controller';
@@ -17,28 +18,13 @@ usersRouter
 
 usersRouter
   .route('/users/:userId/password')
-  .post(
-    checkJwt,
-    extractCurrentUser,
-    requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]),
-    usersController.changePassword,
-  );
+  .post(checkJwt, extractCurrentUser, requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]), usersController.changePassword);
 usersRouter
   .route('/users/:userId/email')
-  .post(
-    checkJwt,
-    extractCurrentUser,
-    requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]),
-    usersController.changeEmail,
-  );
+  .post(checkJwt, extractCurrentUser, requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]), usersController.changeEmail);
 usersRouter
   .route('/users/:userId/close-account')
-  .post(
-    checkJwt,
-    extractCurrentUser,
-    requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]),
-    usersController.closeAccount,
-  );
+  .post(checkJwt, extractCurrentUser, requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]), usersController.closeAccount);
 usersRouter.route('/users/reset-password').post(usersController.resetPassword);
 usersRouter.route('/users/register').post(usersController.register);
 
@@ -46,7 +32,7 @@ usersRouter
   .route('/users/:userId')
   .all(checkJwt, extractCurrentUser)
   .get(usersController.getUser)
-  .patch(requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]), usersController.updateUser)
+  .patch(requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]), forbidCustomerRoleChange, usersController.updateUser)
   .delete(requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]), usersController.deleteUser);
 
 export default usersRouter;
