@@ -1,0 +1,16 @@
+paths:
+  /api/v1/login/:                # path of the user from your endpoint
+    get:
+      tags:
+        - Auth
+      summary: Redirects to auth0 login page
+  /api/v1/logout/:                # path of the user from your endpoint
+    get:
+      tags:
+        - Auth
+      summary: Logs the user out
+  /api/v1/profile/:                # path of the user from your endpoint
+    get:
+      tags:
+        - Auth
+      summary: Gets the auth0 user profile

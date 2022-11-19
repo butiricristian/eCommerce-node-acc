@@ -20,7 +20,7 @@ usersRouter
   .post(
     checkJwt,
     extractCurrentUser,
-    requireOneOfRoles([ROLES.CUSTOMER]),
+    requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]),
     usersController.changePassword,
   );
 usersRouter
@@ -28,7 +28,7 @@ usersRouter
   .post(
     checkJwt,
     extractCurrentUser,
-    requireOneOfRoles([ROLES.CUSTOMER]),
+    requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]),
     usersController.changeEmail,
   );
 usersRouter
@@ -36,7 +36,7 @@ usersRouter
   .post(
     checkJwt,
     extractCurrentUser,
-    requireOneOfRoles([ROLES.CUSTOMER]),
+    requireOneOfRoles([ROLES.ADMIN, ROLES.CUSTOMER]),
     usersController.closeAccount,
   );
 usersRouter.route('/users/reset-password').post(usersController.resetPassword);

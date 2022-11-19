@@ -19,7 +19,7 @@ class AuthController {
   logout(req: Request, res: Response) {
     eventEmitter.emit('track', {
       action: ACTIONS.LOGOUT,
-      requestUserId: req.auth.payload.sub,
+      requestUserId: req.auth?.payload?.sub || 'anonymous',
       payload: req.body,
     })
     res.oidc.logout();
