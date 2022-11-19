@@ -10,7 +10,7 @@ import { connectDatabase } from './common/mongoose.service';
 import usersRouter from './users/users.routes';
 import { SwaggerConfig } from './swagger.config';
 import { handleAuth0Error, handleUnauthorizedError } from './auth/middleware/auth.errors.middleware';
-import { handleValidationError } from './users/middleware/users.middleware';
+import { handleCustomValidationError, handleValidationError } from './users/middleware/users.error.middleware';
 import analyticsRouter from './analytics/analytics.routes';
 const PORT = 3001;
 
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.use(handleUnauthorizedError, handleAuth0Error, handleValidationError)
+app.use(handleUnauthorizedError, handleAuth0Error, handleValidationError, handleCustomValidationError)
 
 new SwaggerConfig(app, 'localhost', PORT);
 

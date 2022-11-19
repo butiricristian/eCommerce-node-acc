@@ -19,3 +19,11 @@ export const handleValidationError: ErrorRequestHandler = (err, req: Request, re
   }
   next(err);
 };
+
+export const handleCustomValidationError: ErrorRequestHandler = (err, req: Request, res: Response, next: NextFunction) => {
+  if (err && err.name === 'ValidationError') {
+    log('HANDLE CUSTOM VALIDATION ERROR');
+    res.status(400).send({ err: err.message });
+  }
+  next(err);
+};

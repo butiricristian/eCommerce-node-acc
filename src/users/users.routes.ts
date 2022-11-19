@@ -7,6 +7,7 @@ import {
   requireOneOfRoles,
 } from '../auth/middleware/auth.middleware';
 import usersController from './users.controller';
+import { validateCreateUserData } from './middleware/users.validators.middleware';
 
 const usersRouter = express.Router();
 
@@ -14,7 +15,7 @@ usersRouter
   .route('/users')
   .all(checkJwt, extractCurrentUser)
   .get(requireOneOfRoles([ROLES.ADMIN]), usersController.getUsers)
-  .post(requireOneOfRoles([ROLES.ADMIN]), usersController.createUser);
+  .post(requireOneOfRoles([ROLES.ADMIN]), validateCreateUserData, usersController.createUser);
 
 usersRouter
   .route('/users/:userId/password')
