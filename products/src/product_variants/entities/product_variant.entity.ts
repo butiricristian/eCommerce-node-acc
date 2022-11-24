@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Product } from 'src/products/entities/product.entity';
 
 export type ProductDocument = HydratedDocument<ProductVariant>;
 
@@ -16,6 +17,9 @@ export class ProductVariant {
 
   @Prop()
   sku: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Product' })
+  product: Product;
 }
 
 export const ProductVariantSchema =

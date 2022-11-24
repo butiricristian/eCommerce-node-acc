@@ -1,34 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { ProductVariantsService } from './product_variants.service';
 import { CreateProductVariantDto } from './dto/create-product_variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product_variant.dto';
 
-@Controller('product-variants')
+@Controller('products/:productId/variants')
 export class ProductVariantsController {
-  constructor(private readonly productVariantsService: ProductVariantsService) {}
-
-  @Post()
-  create(@Body() createProductVariantDto: CreateProductVariantDto) {
-    return this.productVariantsService.create(createProductVariantDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.productVariantsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productVariantsService.findOne(+id);
-  }
+  constructor(
+    private readonly productVariantsService: ProductVariantsService,
+  ) {}
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductVariantDto: UpdateProductVariantDto) {
-    return this.productVariantsService.update(+id, updateProductVariantDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductVariantDto: UpdateProductVariantDto,
+  ) {
+    return await this.productVariantsService.update(
+      id,
+      updateProductVariantDto,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productVariantsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.productVariantsService.remove(id);
+  }
+
+  @Put()
+  async replaceBatch(
+    @Param('productId') productId: string,
+    @Body() productVariants: CreateProductVariantDto[],
+  ) {
+    return await this.productVariantsService.replaceBatch(
+      productId,
+      productVariants,
+    );
   }
 }

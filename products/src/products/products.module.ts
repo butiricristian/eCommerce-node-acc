@@ -11,6 +11,10 @@ import {
   ProductType,
   ProductTypeSchema,
 } from 'src/product_types/entities/product_type.entity';
+import {
+  ProductVariant,
+  ProductVariantSchema,
+} from 'src/product_variants/entities/product_variant.entity';
 
 @Module({
   imports: [
@@ -21,6 +25,9 @@ import {
       { name: ProductType.name, schema: ProductTypeSchema },
     ]),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+    MongooseModule.forFeature([
+      { name: ProductVariant.name, schema: ProductVariantSchema },
+    ]),
   ],
   controllers: [ProductsController],
   providers: [ProductsService],

@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ProductsService } from 'src/products/products.service';
 import { CreateProductVariantDto } from './dto/create-product_variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product_variant.dto';
+import { ProductVariant } from './entities/product_variant.entity';
 
 @Injectable()
 export class ProductVariantsService {
-  create(createProductVariantDto: CreateProductVariantDto) {
-    return 'This action adds a new productVariant';
+  constructor(
+    @InjectModel(ProductVariant.name)
+    private productVariant: Model<ProductVariant>,
+  ) {}
+
+  async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
+    return await this.productVariant.findByIdAndUpdate(
+      id,
+      updateProductVariantDto,
+    );
   }
 
-  findAll() {
-    return `This action returns all productVariants`;
+  async replaceBatch(
+    productId: string,
+    productVariants: CreateProductVariantDto[],
+  ) {
+    await this.productVariant.deleteMany({ product: productId });
+    const productVariantPromises = productVariants.map((pv) =>
+      this.productVariant.create({ ...pv, product: productId }),
+    );
+    return await Promise.all(productVariantPromises);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} productVariant`;
-  }
-
-  update(id: number, updateProductVariantDto: UpdateProductVariantDto) {
-    return `This action updates a #${id} productVariant`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} productVariant`;
+  async remove(id: string) {
+    return await this.productVariant.findByIdAndDelete(id);
   }
 }

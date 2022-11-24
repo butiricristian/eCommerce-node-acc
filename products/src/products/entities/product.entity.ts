@@ -6,7 +6,11 @@ import { ProductVariant } from 'src/product_variants/entities/product_variant.en
 
 export type ProductDocument = HydratedDocument<Product>;
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+  },
+})
 export class Product {
   @Prop()
   name: string;
@@ -23,10 +27,13 @@ export class Product {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }] })
   categories: Category[];
 
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductVariant' }],
-  })
   variants: ProductVariant[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
+
+ProductSchema.virtual('variants', {
+  ref: 'ProductVariant',
+  foreignField: 'product',
+  localField: '_id',
+});

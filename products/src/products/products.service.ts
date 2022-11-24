@@ -24,7 +24,8 @@ export class ProductsService {
     return await this.product
       .findById(id)
       .populate('categories')
-      .populate('product_type');
+      .populate('product_type')
+      .populate('variants');
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
