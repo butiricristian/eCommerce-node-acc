@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ProductsService } from 'src/products/products.service';
 import { CreateProductVariantDto } from './dto/create-product_variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product_variant.dto';
 import { ProductVariant } from './entities/product_variant.entity';

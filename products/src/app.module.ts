@@ -6,6 +6,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductTypesModule } from './product_types/product_types.module';
 import { ProductVariantsModule } from './product_variants/product_variants.module';
 import { CommonModule } from './common/common.module';
+import { ProductImagesModule } from './product_images/product_images.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CommonModule } from './common/common.module';
     CategoriesModule,
     ProductTypesModule,
     ProductVariantsModule,
+    ProductImagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ProductVariantsService } from './product_variants.service';
 import { ProductVariantsController } from './product_variants.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -15,5 +15,6 @@ import {
   ],
   controllers: [ProductVariantsController],
   providers: [ProductVariantsService],
+  exports: [MongooseModule],
 })
 export class ProductVariantsModule {}

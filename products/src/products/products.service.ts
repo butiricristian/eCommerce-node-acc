@@ -36,7 +36,7 @@ export class ProductsService {
     return await this.product.findOneAndReplace({ _id: id }, createProductDto);
   }
 
-  remove(id: string) {
-    return this.product.findByIdAndDelete(id);
+  async remove(id: string) {
+    return await this.product.findByIdAndDelete(id);
   }
 }
