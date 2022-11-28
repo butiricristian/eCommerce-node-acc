@@ -1,9 +1,9 @@
 import { ManagementClient, ObjectWithId, Role } from 'auth0';
 import debug from 'debug';
-import CreateUserDTO from 'src/users/dto/create_user.dto';
+import CreateUserDTO from '../users/dto/create_user.dto';
 import { IUser, ROLES } from '../users/models/user.model';
 import axios from 'axios';
-import UpdateUserDTO from 'src/users/dto/update_user.dto';
+import UpdateUserDTO from '../users/dto/update_user.dto';
 
 const log = debug('app:auth:service');
 

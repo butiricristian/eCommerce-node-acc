@@ -1,4 +1,4 @@
-import { checkJwt, extractCurrentUser } from './../auth/middleware/auth.middleware';
+import { checkJwt, extractCurrentUser } from '../auth/middleware/auth.middleware';
 import * as express from 'express';
 import { requireOneOfRoles } from '../auth/middleware/auth.middleware';
 import { ROLES } from '../users/models/user.model';
