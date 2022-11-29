@@ -7,14 +7,17 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
+    const jwksUri = `${configService.get(
+      'AUTH_ISSUER_BASE_URL',
+    )}.well-known/jwks.json`;
+    console.log(jwksUri);
+
     super({
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `${configService.get(
-          'AUTH_ISSUER_BASE_URL',
-        )}.well-known/jwks.json`,
+        jwksUri,
       }),
 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
