@@ -1,6 +1,6 @@
 import { CreateProductImageDto } from './dto/create_product_image.dto';
 import { UpdateProductImageDto } from './dto/update_product_image.dto';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../products/entities/product.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

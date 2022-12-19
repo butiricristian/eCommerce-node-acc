@@ -10,12 +10,13 @@ import {
 import { ProductVariantsService } from './product_variants.service';
 import { CreateProductVariantDto } from './dto/create-product_variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product_variant.dto';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../auth/enums/role.enum';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.Admin)
 @Controller('products/:productId/variants')
 export class ProductVariantsController {
   constructor(
@@ -23,7 +24,6 @@ export class ProductVariantsController {
   ) {}
 
   @Patch(':id')
-  @Roles(Role.Admin)
   async update(
     @Param('id') id: string,
     @Body() updateProductVariantDto: UpdateProductVariantDto,
@@ -35,13 +35,11 @@ export class ProductVariantsController {
   }
 
   @Delete(':id')
-  @Roles(Role.Admin)
   async remove(@Param('id') id: string) {
     return await this.productVariantsService.remove(id);
   }
 
   @Put()
-  @Roles(Role.Admin)
   async replaceBatch(
     @Param('productId') productId: string,
     @Body() productVariants: CreateProductVariantDto[],

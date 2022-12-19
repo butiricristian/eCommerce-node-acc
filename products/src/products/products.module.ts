@@ -16,14 +16,11 @@ import { ProductTypesModule } from 'src/product_types/product_types.module';
         name: Product.name,
         useFactory(productVariantModel: Model<ProductVariant>) {
           const ProductSchema = SchemaFactory.createForClass(Product);
-          ProductSchema.pre('save', async function () {
-            console.log('Pre Save');
-          });
+
           ProductSchema.post('findOneAndDelete', async function (product) {
-            console.log('Post Remove');
-            console.log(product);
             await productVariantModel.deleteMany({ product: product.id });
           });
+
           ProductSchema.virtual('variants', {
             ref: 'ProductVariant',
             foreignField: 'product',

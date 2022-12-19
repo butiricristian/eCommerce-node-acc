@@ -10,7 +10,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const jwksUri = `${configService.get(
       'AUTH_ISSUER_BASE_URL',
     )}.well-known/jwks.json`;
-    console.log(jwksUri);
 
     super({
       secretOrKeyProvider: passportJwtSecret({

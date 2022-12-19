@@ -10,18 +10,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductImagesService } from './product_images.service';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../auth/enums/role.enum';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.Admin)
 @Controller('products/:productId/images')
 export class ProductImagesController {
   constructor(private readonly productImagesService: ProductImagesService) {}
 
   @Patch(':id')
-  @Roles(Role.Admin)
   async update(
     @Param('productId') productId: string,
     @Param('id') id: string,
@@ -35,13 +35,11 @@ export class ProductImagesController {
   }
 
   @Delete(':id')
-  @Roles(Role.Admin)
   async remove(@Param('productId') productId: string, @Param('id') id: string) {
     return await this.productImagesService.remove(productId, id);
   }
 
   @Put()
-  @Roles(Role.Admin)
   async replaceBatch(
     @Param('productId') productId: string,
     @Body() productImages: CreateProductImageDto[],
