@@ -1,0 +1,344 @@
+paths:
+  /api/v1/users/:                # path of the user from your endpoint
+    get:
+      tags:
+        - User
+      summary: Gets list of all users
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:          # server responses
+        200:
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+    post:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows admins to create new users
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - in: body          # request body
+          name: email     # name of request, can be any name
+          description: User email
+          required: true
+          example: test@example.com
+          schema:           # Schema definition
+            type: string
+      responses:          # server responses
+        201:
+          description: The new created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/users/{userId}:                # path of the user from your endpoint
+    get:
+      tags:
+        - User
+      summary: Gets user by mongo id
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/userId'
+      responses:          # server responses
+        200:
+          description: The requested user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+    patch:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows admins to update all users and user to update its own record
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/userId'
+        - in: body          # request body
+          schema:           # Schema definition
+            $ref: '#/components/schemas/User'
+      responses:          # server responses
+        200:
+          description: The updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows admins to delete all users and user to delete its own record
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/userId'
+        - in: body          # request body
+          schema:           # Schema definition
+            $ref: '#/components/schemas/User'
+      responses:          # server responses
+        200:
+          description: The deleted user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/users/{userId}/email:
+    post:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows user to update their email
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/userId'
+        - in: body          # request body
+          name: email
+          type: string
+          required: true
+          example: test@example.com
+      responses:          # server responses
+        204:
+          description: Success
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/users/{userId}/password:
+    post:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows user to update their password
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/userId'
+        - in: body          # request body
+          name: password
+          type: string
+          required: true
+          example: admin1234
+      responses:          # server responses
+        204:
+          description: Success
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/users/{userId}/close-account:
+    post:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows user to close their account
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/userId'
+      responses:          # server responses
+        204:
+          description: Success
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/users/reset-password:
+    post:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows user to reset their password by sending an email with the password reset link
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - in: query          # request body
+          name: email
+          type: string
+          required: true
+          example: test@example.com
+      responses:          # server responses
+        204:
+          description: Success
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/users/register:
+    post:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - User            # Value of the tag
+      summary: Allows user to create a mongo record associated to their auth0 user. This endpoint is called automatically by auth0 after the registration process
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - in: query          # request body
+          name: email
+          type: string
+          required: true
+          example: test@example.com
+        - in: query          # request body
+          name: username
+          type: string
+          required: true
+          example: test@example.com
+        - in: query          # request body
+          name: firstName
+          type: string
+          required: true
+          example: First
+        - in: query          # request body
+          name: lastName
+          type: string
+          required: true
+          example: Last
+        - in: query          # request body
+          name: avatar
+          type: string
+          required: true
+          example: url
+      responses:          # server responses
+        201:
+          description: Success
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          example: test@example.com
+        email:
+          type: string
+          example: test@example.com
+        auth0Id:
+          type: string
+          example: auth0|123456789
+        role:
+          type: string
+          enum: [admin, customer]
+          example: admin
+        firstName:
+          type: string
+          example: First
+        lastName:
+          type: string
+          example: Last
+        gender:
+          type: string
+          enum: [MALE, FEMALE]
+          example: MALE
+        phone:
+          type: string
+          example: '1234567890'
+        dateOfBirth:
+          type: string
+          format: date
+          example: 1996-13-11
+        avatar:
+          type: string
+          example: url
+        addresses:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+                example: '102, Barber Street'
+              city:
+                type: string
+                example: Los Angeles
+              state:
+                type: string
+                example: California
+              postalCode:
+                type: string
+                example: 12345
+              label:
+                type: string
+                example: home
+              primary:
+                type: boolean
+                example: true
+        status:
+          type: string
+          enum: [active, closed]
+          example: active
+    Error:
+      type: object
+      properties:
+        err:
+          type: string
+          example: Error message
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Record could not be found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: User cannot modify this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    limit:
+      in: query
+      name: limit
+      description: Number of records per page
+      required: false
+      schema:
+        type: integer
+    offset:
+      in: query
+      name: offset
+      description: Number of records to skip
+      required: false
+      schema:
+        type: integer
+    userId:
+      in: path
+      name: userId
+      description: Mongo id of the user
+      required: true
+      schema:
+        type: string
