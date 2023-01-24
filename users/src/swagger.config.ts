@@ -5,6 +5,7 @@ import * as swaggerUi from 'swagger-ui-express';
 export class SwaggerConfig {
   constructor(app: Application, HOST: string, PORT: number) {
     const swaggerDefinition = {
+      openapi: '3.0.0',
       info: {
         title: 'USERS API', // Title of the documentation
         version: '1.0.0', // Version of the app

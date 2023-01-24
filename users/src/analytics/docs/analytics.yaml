@@ -1,0 +1,93 @@
+paths:
+  /api/v1/analytics/:                # path of the user from your endpoint
+    get:
+      tags:
+        - Analytics
+      summary: Gets list of all analytixs
+      produces:
+        - application/json
+      parameters:         # request parameters
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/action'
+      responses:          # server responses
+        200:
+          description: List of analytics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Analytics'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  schemas:
+    Analytics:
+      type: object
+      properties:
+        requestUserId:
+          type: string
+          example: '123456'
+        action:
+          type: string
+          example: 'user.login'
+        payload:
+          type: string
+          example: '{ email: test@example.com }'
+    Error:
+      type: object
+      properties:
+        err:
+          type: string
+          example: Error message
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Record could not be found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: User cannot modify this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    limit:
+      in: query
+      name: limit
+      description: Number of records per page
+      required: false
+      schema:
+        type: integer
+    offset:
+      in: query
+      name: offset
+      description: Number of records to skip
+      required: false
+      schema:
+        type: integer
+    userId:
+      in: query
+      name: userId
+      description: Mongo id of the user
+      required: false
+      schema:
+        type: string
+    action:
+      in: query
+      name: action
+      description: Action performed by the user
+      required: false
+      schema:
+        type: string
